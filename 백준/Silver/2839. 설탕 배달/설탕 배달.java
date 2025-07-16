@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -6,8 +7,8 @@ public class Main {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         int n = Integer.parseInt(br.readLine());
-        int count = 0;
 
+        int count = 0;
         while (true) {
             if (n < 0) {
                 count = -1;
@@ -16,16 +17,16 @@ public class Main {
             if (n % 5 == 0) {
                 count += (n / 5);
                 break;
-            }
-            else {
+            } else {
                 n -= 3;
                 count++;
             }
         }
 
-        bw.write(count + "" + "\n");
-        
-        br.close();
+        bw.write(count + "\n");
+
+        bw.flush();
         bw.close();
+        br.close();
     }
 }
