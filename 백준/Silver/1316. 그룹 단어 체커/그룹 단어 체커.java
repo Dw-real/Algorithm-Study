@@ -1,24 +1,27 @@
 import java.io.*;
-import java.util.*;
-
 
 public class Main {
-    static boolean groupWord(String word) {
-        ArrayList<Character> arr = new ArrayList<Character>();
+    static boolean[] visited; // 각 알파벳에 대한 방문 처리 배열
 
-        arr.add(word.charAt(0));
+    static int checkGroupWord(String word) {
+        boolean isCheckWord = true;
+        char start = word.charAt(0);
+        visited[start - '0' - 49] = true;
 
-        for (int i=1; i<word.length(); i++) {
-            // 이전 문자와 다른 경우
-            if (word.charAt(i) != word.charAt(i-1)) {
-                if (arr.contains(word.charAt(i))) // 이미 나왔던 문자인 경우
-                    return false;
-                else
-                    arr.add(word.charAt(i));
-            }    
+        for (int i = 1; i < word.length(); i++) {
+            char c = word.charAt(i);
+            if (word.charAt(i - 1) != c) {
+                if (visited[c - '0' - 49]) {
+                    isCheckWord = false;
+                    break;
+                }
+            }
+            visited[c - '0' - 49] = true;
         }
-
-        return true;
+        if (isCheckWord)
+            return 1;
+        else
+            return 0;
     }
 
     public static void main(String[] args) throws IOException {
@@ -26,18 +29,17 @@ public class Main {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         int n = Integer.parseInt(br.readLine());
-        int count = 0;
-
-        for (int i=0; i<n; i++) {
+        int count = 0; // 그룹 단어의 개수
+        for (int i = 0; i < n; i++) {
+            visited = new boolean[26];
             String word = br.readLine();
-            
-            if (groupWord(word))
-                count++;
+            count += checkGroupWord(word);
         }
 
-        bw.write(count + "" + "\n");
-        
-        br.close();
+        bw.write(count + "\n");
+
+        bw.flush();
         bw.close();
+        br.close();
     }
 }
