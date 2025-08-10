@@ -18,23 +18,25 @@ public class Main {
 
         int area = 0;
         while (!q.isEmpty()) {
-            int[] now = q.poll();
-            int nowX = now[0];
-            int nowY = now[1];
+            for (int s = 0; s< q.size(); s++) {
+                int[] now = q.poll();
+                int nowX = now[0];
+                int nowY = now[1];
 
-            for (int i = 0; i < 4; i++) {
-                int nx = nowX + dx[i];
-                int ny = nowY + dy[i];
+                for (int i = 0; i < 4; i++) {
+                    int nx = nowX + dx[i];
+                    int ny = nowY + dy[i];
 
-                if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
-                if (visited[nx][ny]) continue;
+                    if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+                    if (visited[nx][ny]) continue;
 
-                if (board[nx][ny] == 1) {
-                    q.add(new int[]{nx, ny});
-                    visited[nx][ny] = true;
+                    if (board[nx][ny] == 1) {
+                        q.add(new int[]{nx, ny});
+                        visited[nx][ny] = true;
+                    }
                 }
+                ++area;
             }
-            ++area;
         }
 
         return area;
