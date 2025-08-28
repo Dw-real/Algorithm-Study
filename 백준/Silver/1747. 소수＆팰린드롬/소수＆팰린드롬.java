@@ -1,14 +1,27 @@
 import java.io.*;
 
 public class Main {
-    static boolean isPalindrome(int prime) {
-        char[] p = String.valueOf(prime).toCharArray();
-        int start = 0;
-        int end = p.length - 1;
 
-        while (start < end) {
-            if (p[start] != p[end])
+    static boolean isPrime(int n) {
+        if (n == 1)
+            return false;
+
+        for (int i=2; i<= Math.sqrt(n); i++) {
+            if (n % i == 0)
                 return false;
+        }
+        return true;
+    }
+
+    static boolean isPalindrome(int n) {
+        String number = String.valueOf(n);
+        int start = 0;
+        int end = number.length() - 1;
+
+        while (start <= end) {
+            if (number.charAt(start) != number.charAt(end))
+                return false;
+
             start++;
             end--;
         }
@@ -18,38 +31,16 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        
+
         int n = Integer.parseInt(br.readLine());
-        int[] num = new int[10000001];
 
-        for (int i=2; i<num.length; i++) {
-            num[i] = i;
+        while (!isPrime(n) || !isPalindrome(n)) {
+            n++;
         }
 
-        // 소수 판별
-        for (int i=2; i<Math.sqrt(num.length); i++) {
-            if (num[i] == 0)
-                continue;
-            for (int j=i+i; j<num.length; j+=i) {
-                num[j] = 0;
-            }
-        }
+        bw.write(n + "\n");
 
-        int i=n; // n 이상의 수
-
-        while(true) {
-            if (num[i] != 0) {
-                int prime = num[i];
-
-                if (isPalindrome(prime)) {
-                    bw.write(prime + "\n");
-                    break;
-                }
-            }
-            i++;
-        }
-
-        bw.flush(); 
+        bw.flush();
         bw.close();
         br.close();
     }
