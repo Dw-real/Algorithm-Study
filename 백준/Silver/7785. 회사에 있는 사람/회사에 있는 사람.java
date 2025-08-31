@@ -7,30 +7,27 @@ public class Main {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         int n = Integer.parseInt(br.readLine());
-        
-        TreeMap<String, String> log = new TreeMap<String, String>(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o2.compareTo(o1);
-            }
-        });
 
-        StringTokenizer st;
+        TreeSet<String> set = new TreeSet<>(Collections.reverseOrder());
 
-        for (int i=0; i<n; i++) {
-            st = new StringTokenizer(br.readLine(), " ");
+        for (int i = 0; i < n; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
             String name = st.nextToken();
-            String enter = st.nextToken();
+            String log = st.nextToken();
 
-            log.put(name, enter);
+            if (log.equals("enter")) {
+                set.add(name);
+            } else if (log.equals("leave")) {
+                set.remove(name);
+            }
         }
 
-        for (String name : log.keySet()) {
-            if (log.get(name).equals("enter"))
-                bw.write(name + "\n");
+        for (String name : set) {
+            bw.write(name + "\n");
         }
-        
-        br.close();
+
+        bw.flush();
         bw.close();
+        br.close();
     }
 }
