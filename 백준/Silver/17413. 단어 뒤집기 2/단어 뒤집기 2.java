@@ -2,47 +2,47 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        
-        Stack<Character> stack = new Stack<Character>();
 
-        String str = br.readLine();
-        
-        boolean tag = false;
+        Stack<Character> stack = new Stack<>();
 
-        for (int i=0; i<str.length(); i++) {
-            if (str.charAt(i) == '<') {
-                tag = true;
+        boolean valid = true;
+
+        String s = br.readLine();
+
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+
+            if (c == '<') {
+                valid = false;
                 while (!stack.isEmpty()) {
                     bw.write(stack.pop());
                 }
-            }
-            else if (str.charAt(i) == '>') {
-                tag = false;
-                bw.write(str.charAt(i));
-            }
-            else if (str.charAt(i) == ' ' && !tag) {
+            } else if (c == '>') {
+                valid = true;
+                bw.write(c);
+            } else if (valid && c == ' ') {
                 while (!stack.isEmpty()) {
                     bw.write(stack.pop());
                 }
-                bw.write(str.charAt(i));
+                bw.write(c);
             }
-            if (tag) {
-                bw.write(str.charAt(i));
+            if (!valid) {
+                bw.write(c);
+            } else if (c != ' ' && c != '>') {
+                stack.push(c);
             }
-            if (!tag && str.charAt(i) != '>' && str.charAt(i) != ' ') {
-                stack.add(str.charAt(i));
-            } 
         }
-        
+
         while (!stack.isEmpty()) {
             bw.write(stack.pop());
         }
-        bw.write("\n");
 
-        br.close();
+        bw.flush();
         bw.close();
+        br.close();
     }
 }
