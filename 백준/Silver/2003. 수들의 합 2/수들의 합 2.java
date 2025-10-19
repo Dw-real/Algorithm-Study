@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -10,33 +11,35 @@ public class Main {
         int n = Integer.parseInt(st.nextToken());
         int m = Integer.parseInt(st.nextToken());
 
-        int[] sum = new int[n + 1]; // 구간 합 배열
-        
+        int[] arr = new int[n + 1];
+        int[] sum = new int[n + 1];
+
         st = new StringTokenizer(br.readLine(), " ");
-        for (int i=1; i<=n; i++) {
-            sum[i] = sum[i - 1] + Integer.parseInt(st.nextToken());
+
+        for (int i = 1; i <= n; i++) {
+            arr[i] = Integer.parseInt(st.nextToken());
+            sum[i] = sum[i - 1] + arr[i];
         }
 
         int i = 1;
         int j = 1;
         int count = 0;
 
-        
         while (j <= n) {
             if (sum[j] - sum[i - 1] == m) {
                 count++;
                 i++;
             }
-            else if (sum[j] - sum[i - 1] > m) {
+            if (sum[j] - sum[i - 1] < m) {
+                j++;
+            } else {
                 i++;
             }
-            else {
-                j++;
-            }
         }
+
         bw.write(count + "\n");
 
-        bw.flush(); 
+        bw.flush();
         bw.close();
         br.close();
     }
