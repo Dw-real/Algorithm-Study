@@ -1,62 +1,70 @@
 import java.io.*;
+import java.util.*;
 
-public class Main {
-    static String checkPwd(String pwd) {
-        boolean pass = true;
+class Main {
+    static Set<Character> moeum = Set.of('a', 'e', 'i', 'o', 'u');
 
-        int count = 0; // 모음
-        int c_count = 0; // 연속되는 자음
-        int v_count = 0; // 연속되는 모음
+    static String check(String pwd) {
+        boolean valid = true;
+        boolean conti = true; // 연속된 자음 또는 연속된 모음 판별
+        int count = 1; // 연속된 모음/자음의 수
 
-        for (int i=0; i<pwd.length(); i++) {
+        int m = 0; // 모음의 수
+
+        char start = pwd.charAt(0);
+
+        if (moeum.contains(start)) {
+            m++;
+
+        } else {
+            conti = false;
+        }
+
+
+        for (int i = 1; i < pwd.length(); i++) {
             char c = pwd.charAt(i);
-            if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
-                c_count = 0;
+
+            if (moeum.contains(c))
+                m++;
+
+            // 2번 조건
+            if (conti && moeum.contains(c)) {
                 count++;
-                v_count++;
-                
-                if (v_count == 3) {
-                    pass = false;
-                    break;
-                }
+            } else if (conti && !moeum.contains(c)) {
+                count = 1;
+                conti = false;
+            } else if (!conti && !moeum.contains(c)) {
+                count++;
+            } else {
+                count = 1;
+                conti = true;
             }
-            else {
-                v_count = 0;
-                c_count++;
 
-                if (c_count == 3) {
-                    pass = false;
-                    break;
-                }
+            if (count >= 3) {
+                valid = false;
+                break;
             }
-            
-            if (i != 0) {
-                char c1 = pwd.charAt(i - 1);
 
-                if (c == c1 && !(c == 'e' || c == 'o'))
-                    pass = false;
-                else if (c == c1 && (c1 == 'e' || c1 == 'o') && v_count != 3)
-                    pass = true;  
+            // 3번 조건
+            if ((c != 'e' && c != 'o') && (c == pwd.charAt(i - 1))) {
+                valid = false;
+                break;
             }
         }
-        
-        if (count == 0)
-            pass = false;
 
-        if (pass) {
+        // 1번 조건
+        if (m == 0)
+            valid = false;
+
+        if (valid)
             return "<" + pwd + "> is acceptable.";
-        }
-        else{
+        else
             return "<" + pwd + "> is not acceptable.";
-        }
-                 
     }
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        
-        StringBuilder sb = new StringBuilder();
 
         while (true) {
             String pwd = br.readLine();
@@ -64,12 +72,11 @@ public class Main {
             if (pwd.equals("end"))
                 break;
 
-            sb.append(checkPwd(pwd) + "\n");
+            bw.write(check(pwd) + "\n");
         }
 
-        bw.write(sb.toString());
-
-        br.close();
+        bw.flush();
         bw.close();
+        br.close();
     }
 }
