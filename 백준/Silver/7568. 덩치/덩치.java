@@ -1,47 +1,59 @@
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
+
+class Body {
+    int weight;
+    int height;
+
+    public Body(int weight, int height) {
+        this.weight = weight;
+        this.height = height;
+    }
+}
 
 public class Main {
-    static String getRank(ArrayList<int[]> info) {
-        StringBuilder sb = new StringBuilder();
-        int index = 0;
-
-        while (true) {
-            int rank = 1;
-            if (index == info.size())
-                break;
-            for (int i=0; i<info.size(); i++) {
-                int weight = info.get(index)[0];
-                int height = info.get(index)[1];
-
-                if (weight < info.get(i)[0] && height < info.get(i)[1])
-                    rank++;
-            }
-            sb.append(rank + " ");
-            index++;
-        }
-
-        return sb.toString();
-    }
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         int n = Integer.parseInt(br.readLine());
-        ArrayList<int[]> info = new ArrayList<int[]>();
+        Body[] arr = new Body[n];
+        int[] rank = new int[n];
 
-        for (int i=0; i<n; i++) {
+        for (int i = 0; i < n; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine(), " ");
             int weight = Integer.parseInt(st.nextToken());
             int height = Integer.parseInt(st.nextToken());
 
-            info.add(new int[]{weight, height});
+            arr[i] = new Body(weight, height);
         }
 
-        bw.write(getRank(info) + "\n");
 
-        br.close();
+        for (int i = 0; i < n; i++) {
+            int r = 1;
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    int w1 = arr[i].weight;
+                    int h1 = arr[i].height;
+                    int w2 = arr[j].weight;
+                    int h2 = arr[j].height;
+
+                    if (w1 < w2 && h1 < h2)
+                        r++;
+                }
+            }
+            rank[i] = r;
+        }
+
+        for (int ans : rank) {
+            bw.write(ans + " ");
+        }
+        bw.write("\n");
+        
+        bw.flush();
         bw.close();
+        br.close();
     }
 }
