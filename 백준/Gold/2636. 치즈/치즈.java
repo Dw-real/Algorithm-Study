@@ -1,42 +1,43 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
+class Main {
     static int[] dx = {-1, 1, 0, 0};
     static int[] dy = {0, 0, -1, 1};
-    static int[][] box;
+    static int[][] board;
     static boolean[][] visited;
     static int n, m;
-    static int cheese;
+    static int cheeze = 0;
 
-    static void bfs() {
-        visited[0][0] = true;
+    static void melt() {
         Queue<int[]> q = new LinkedList<>();
+        visited[0][0] = true;
         q.add(new int[]{0, 0});
 
         while (!q.isEmpty()) {
             int[] now = q.poll();
-            int x = now[0];
-            int y = now[1];
+            int nowX = now[0];
+            int nowY = now[1];
 
-            for (int i=0; i<4; i++) {
-                int nx = x + dx[i];
-                int ny = y + dy[i];
+            for (int i = 0; i < 4; i++) {
+                int nx = nowX + dx[i];
+                int ny = nowY + dy[i];
 
                 if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
                 if (visited[nx][ny]) continue;
 
-                visited[nx][ny] = true;
-                if (box[nx][ny] == 0) {
+                if (board[nx][ny] == 1) {
+                    visited[nx][ny] = true;
+                    board[nx][ny] = 0;
+                    cheeze--;
+                } else if (board[nx][ny] == 0) {
+                    visited[nx][ny] = true;
                     q.add(new int[]{nx, ny});
-                }
-                else if (box[nx][ny] == 1) {
-                    cheese--;
-                    box[nx][ny] = 0;
                 }
             }
         }
     }
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -45,32 +46,30 @@ public class Main {
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
 
-        box = new int[n][m];
-        visited = new boolean[n][m];
+        board = new int[n][m];
 
-        cheese = 0;
-        for (int i=0; i<n; i++) {
+        for (int i = 0; i < n; i++) {
             st = new StringTokenizer(br.readLine(), " ");
-            for (int j=0; j<m; j++) {
-                box[i][j] = Integer.parseInt(st.nextToken());
-                if (box[i][j] == 1)
-                    cheese++;
+            for (int j = 0; j < m; j++) {
+                board[i][j] = Integer.parseInt(st.nextToken());
+                if (board[i][j] == 1)
+                    cheeze++;
             }
         }
 
+        int before = 0;
         int time = 0;
-        int result = 0;
-        while (cheese != 0) {
+        while (cheeze != 0) {
             visited = new boolean[n][m];
-            result = cheese;
-            bfs();
+            before = cheeze;
+            melt();
             time++;
         }
 
-        bw.write(time + "\n");
-        bw.write(result + "\n");
+        bw.write(time + "\n" + before + "\n");
 
-        br.close();
+        bw.flush();
         bw.close();
+        br.close();
     }
 }
