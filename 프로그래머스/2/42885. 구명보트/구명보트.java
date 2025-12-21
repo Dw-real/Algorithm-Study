@@ -4,17 +4,17 @@ class Solution {
     public int solution(int[] people, int limit) {
         int answer = 0;
         Arrays.sort(people);
-
-        int start = 0;
-        int end = people.length - 1;
-
-        while (start < end) {
-            if (people[start] + people[end] <= limit) {
+        int s = 0;
+        int e = people.length - 1;
+        
+        while (s < e) {
+            if (people[s] + people[e] <= limit) {
                 answer++;
-                start++;
-                end--;
-            } else {
-                end--;
+                s++;
+                e--;
+            }
+            else {
+                e--;
             }
         }
         return people.length - answer;
