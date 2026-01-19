@@ -1,40 +1,34 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
-    static int[] romeNum = {1, 5, 10, 50};
-    static ArrayList<Integer> nums;
+class Main {
+    static int[] rome = {1, 5, 10, 50};
+    static HashSet<Integer> ans = new HashSet();
 
-    static void combination(int[] romeNum, int[] output, int start, int depth, int n) {
+    static void combination(int[] output, int n, int start, int depth) {
         if (depth == n) {
-            if (!nums.contains(getSum(output))) {
-                nums.add(getSum(output));
+            int num = 0;
+            for (int i : output) {
+                num += i;
             }
+            ans.add(num);
             return;
         }
-        for (int i=start; i<romeNum.length; i++) {
-            output[depth] = romeNum[i];
-            combination(romeNum, output, i, depth + 1, n);
+        for (int i = start; i < 4; i++) {
+            output[depth] = rome[i];
+            combination(output, n, i, depth + 1);
         }
     }
 
-    static int getSum(int[] arr) {
-        int sum = 0;
-        for (int i=0; i<arr.length; i++) {
-            sum += arr[i];
-        }
-        return sum;
-    }
-    
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        
-        int n = Integer.parseInt(br.readLine());
-        nums = new ArrayList<>();
 
-        combination(romeNum, new int[n], 0, 0, n);
-        bw.write(nums.size() + "\n");
+        int n = Integer.parseInt(br.readLine());
+        combination(new int[n], n, 0, 0);
+
+        bw.write(ans.size() + "\n");
+
         bw.flush();
         bw.close();
         br.close();
