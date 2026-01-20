@@ -1,111 +1,110 @@
 import java.io.*;
 import java.util.*;
 
-class Point {
-    int x;
-    int y;
+class Direction {
+    int time;
+    String dir;
 
-    public Point(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public Direction(int time, String dir) {
+        this.time = time;
+        this.dir = dir;
     }
 }
 
 public class Main {
-    static int[] dx = {-1, 1, 0, 0}; // 상,하,좌,우
+    static int[] dx = {-1, 1, 0, 0};
     static int[] dy = {0, 0, -1, 1};
-    static int beginDirection = 3; // 뱀은 처음에 오른쪽으로 이동
-    static Queue<Point> direction = new LinkedList<Point>();
-    static Deque<Point> snake = new ArrayDeque<Point>();
+    static int[][] board;
+    static int n;
+    static int time = 0;
+    static Queue<Direction> dirs = new LinkedList<>();
 
-    static int turnLeft(int direction) {
-        return (direction == 0) ? 2 : (direction == 1) ? 3 : (direction == 2) ? 1 : 0; 
-    }
+    static void startGame() {
+        Deque<int[]> snake = new ArrayDeque<>();
+        snake.offerFirst(new int[]{0, 0});
+        int dir = 3; // 뱀은 처음에 오른쪽으로 이동
 
-    static int turnRight(int direction) {
-        return (direction == 0) ? 3 : (direction == 1) ? 2 : (direction == 2) ? 0 : 1;
-    }
-    
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-
-        int n = Integer.parseInt(br.readLine()); // 보드의 크기
-        int k = Integer.parseInt(br.readLine()); // 사과의 개수
-        int time = 0; // 게임 실행 시간
-
-        int[][] board = new int[n][n];
-        board[0][0] = 2; // 뱀의 위치
-
-        snake.offer(new Point(0, 0));
-
-        // 사과 위치 정보
-        for (int i=0; i<k; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-            int r = Integer.parseInt(st.nextToken()) - 1;
-            int c = Integer.parseInt(st.nextToken()) - 1;
-
-            board[r][c] = 1;
-        }
-
-        int l = Integer.parseInt(br.readLine()); // 방향 전환 정보
-
-        for (int i=0; i<l; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-
-            int x = Integer.parseInt(st.nextToken());
-            String c = st.nextToken();
-
-            if (c.equals("L")) // 왼쪽
-                direction.offer(new Point(x, 0));
-            else if (c.equals("D")) // 오른쪽
-                direction.offer(new Point(x, 1));
-        }
-        
-        int x = direction.peek().x;
-        int c = direction.poll().y;
+        int t = dirs.peek().time;
+        String d = dirs.poll().dir;
 
         while (true) {
             time++;
 
-            int nx = snake.peekFirst().x + dx[beginDirection];
-            int ny = snake.peekFirst().y + dy[beginDirection];
-            
+            int nowX = snake.peekFirst()[0];
+            int nowY = snake.peekFirst()[1];
+
+            int nx = nowX + dx[dir];
+            int ny = nowY + dy[dir];
+
+            // 벽 또는 자기자신의 몸과 부딪히면 게임 종료
             if ((nx < 0 || nx >= n) || (ny < 0 || ny >= n) || board[nx][ny] == 2)
                 break;
-            
-            if (board[nx][ny] == 1) { // 사과가 있다면
+
+            if (board[nx][ny] == 1) { // 사과가 있다면 사과를 없애고 꼬리를 움직이지 않음
+                snake.offerFirst(new int[]{nx, ny});
                 board[nx][ny] = 2;
-
-                snake.offerFirst(new Point(nx, ny));
-            }
-            else { // 사과가 없다면
+            } else if (board[nx][ny] == 0) { // 사과가 없다면 몸 길이를 줄여서 꼬리가 위치한 칸을 비움
+                snake.offerFirst(new int[]{nx, ny});
                 board[nx][ny] = 2;
-
-                snake.offerFirst(new Point(nx, ny));
-
-                board[snake.peekLast().x][snake.pollLast().y] = 0; // 몸 길이를 줄여서 꼬리가 위치한 칸 비우기
+                board[snake.peekLast()[0]][snake.pollLast()[1]] = 0;
             }
 
-            if (time == x) { // 방향 바꾸기
-                if (c == 0) {
-                    beginDirection = turnLeft(beginDirection);   
-                }
-                else {
-                    beginDirection = turnRight(beginDirection);
+            if (t == time) {
+                if (d.equals("L")) {
+                    dir = turnLeft(dir);
+                } else if (d.equals("D")) {
+                    dir = turnRight(dir);
                 }
 
-                if (!direction.isEmpty()) { // 방향 정보 갱신
-                    x = direction.peek().x;
-                    c = direction.poll().y;
+                if (!dirs.isEmpty()) {
+                    t = dirs.peek().time;
+                    d = dirs.poll().dir;
                 }
             }
+        }
+    }
 
+    static int turnLeft(int dir) {
+        return (dir == 0) ? 2 : (dir == 1) ? 3 : (dir == 2) ? 1 : 0;
+    }
+
+    static int turnRight(int dir) {
+        return (dir == 0) ? 3 : (dir == 1) ? 2 : (dir == 2) ? 0 : 1;
+    }
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        n = Integer.parseInt(br.readLine());
+        board = new int[n][n];
+
+        int k = Integer.parseInt(br.readLine()); // 사과의 개수
+
+        for (int i = 0; i < k; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+            int r = Integer.parseInt(st.nextToken());
+            int c = Integer.parseInt(st.nextToken());
+            board[r - 1][c - 1] = 1;
         }
 
-        bw.write(time + "" + "\n");
+        board[0][0] = 2; // 뱀의 시작 위치
 
-        br.close();
+        int l = Integer.parseInt(br.readLine()); // 방향 전환 횟수
+        for (int i = 0; i < l; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+            int x = Integer.parseInt(st.nextToken());
+            String c = st.nextToken();
+
+            dirs.add(new Direction(x, c));
+        }
+
+        startGame();
+
+        bw.write(time + "\n");
+
+        bw.flush();
         bw.close();
+        br.close();
     }
 }
