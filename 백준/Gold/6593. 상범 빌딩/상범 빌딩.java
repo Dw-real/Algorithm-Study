@@ -1,67 +1,60 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
-    // 동서남북상하
-    static int[] dx = {0, 0, 0, 0, -1 ,1};
-    static int[] dy = {0, 0, 1, -1, 0, 0};
-    static int[] dz = {1, -1, 0, 0, 0, 0};
-    static int l;
-    static int r;
-    static int c;
-    static int startX;
-    static int startY;
-    static int startZ;
-    static int endX;
-    static int endY;
-    static int endZ;
+class Main {
+    // 6방향벡터 (동,서,남,북,상,하)
+    static int[] dx = {-1, 1, 0, 0, 0, 0};
+    static int[] dy = {0, 0, -1, 1, 0, 0};
+    static int[] dz = {0, 0, 0, 0, -1, 1};
+
+    static int l, r, c;
+    static int startX, startY, startZ, endX, endY, endZ;
     static char[][][] building;
     static boolean[][][] visited;
-    static StringBuilder sb;
 
-    static void bfs(int startX, int startY, int startZ) {
-        Deque<int[]> dq = new ArrayDeque<int[]>();
-        dq.offer(new int[]{startX, startY, startZ, 0});
+    static int bfs() {
+        Queue<int[]> q = new LinkedList<>();
         visited[startX][startY][startZ] = true;
-        boolean flag = false;
+        q.add(new int[]{startX, startY, startZ, 0});
 
-        while (!dq.isEmpty()) {
-            int[] now = dq.poll();
+        while (!q.isEmpty()) {
+            int[] now = q.poll();
             int nowX = now[0];
             int nowY = now[1];
             int nowZ = now[2];
-            int result = now[3];
+            int time = now[3];
 
             if (nowX == endX && nowY == endY && nowZ == endZ) {
-                sb.append("Escaped in ").append(result).append(" minute(s).\n");
-                flag = true;
+                return time;
             }
 
-            for (int i=0; i<6; i++) {
+            for (int i = 0; i < 6; i++) {
                 int nx = nowX + dx[i];
                 int ny = nowY + dy[i];
                 int nz = nowZ + dz[i];
 
-                if (isValid(nx, ny, nz) && !visited[nx][ny][nz] && building[nx][ny][nz] != '#') {
+                if (!isValid(nx, ny, nz)) continue;
+                if (visited[nx][ny][nz]) continue;
+
+                if (building[nx][ny][nz] != '#') {
+                    q.add(new int[]{nx, ny, nz, time + 1});
                     visited[nx][ny][nz] = true;
-                    dq.offer(new int[]{nx, ny, nz, result + 1});
                 }
             }
         }
 
-        if (!flag)
-            sb.append("Trapped!").append("\n");
+        return -1;
     }
 
     static boolean isValid(int x, int y, int z) {
-        return (0 <= x && x < l && 0 <= y && y < r && 0 <= z && z < c);
+        return (x >= 0 && x < l && y >= 0 && y < r && z >= 0 && z < c);
     }
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-    
-        sb = new StringBuilder();
+
+        StringBuilder sb = new StringBuilder();
 
         while (true) {
             StringTokenizer st = new StringTokenizer(br.readLine(), " ");
@@ -69,32 +62,32 @@ public class Main {
             if (!st.hasMoreTokens()) {
                 st = new StringTokenizer(br.readLine(), " ");
             }
-            
-            l = Integer.parseInt(st.nextToken());
-            r = Integer.parseInt(st.nextToken());
-            c = Integer.parseInt(st.nextToken());
-            
+
+            l = Integer.parseInt(st.nextToken()); // 빌딩의 층 수
+            r = Integer.parseInt(st.nextToken()); // 한 층의 행
+            c = Integer.parseInt(st.nextToken()); // 한 층의 열
+
             if (l == 0 && r == 0 && c == 0)
                 break;
- 
+
             building = new char[l][r][c];
             visited = new boolean[l][r][c];
 
-            for (int i=0; i<l; i++) {
-                for (int j=0; j<r; j++) {
+            for (int i = 0; i < l; i++) {
+                for (int j = 0; j < r; j++) {
                     String str = br.readLine();
-                    
+
                     if (str.equals(""))
                         str = br.readLine();
 
-                    for (int k=0; k<c; k++) {
+                    for (int k = 0; k < c; k++) {
                         building[i][j][k] = str.charAt(k);
-                        if (building[i][j][k] == 'S'){
+
+                        if (building[i][j][k] == 'S') { // 시작 지점
                             startX = i;
                             startY = j;
                             startZ = k;
-                        }
-                        else if (building[i][j][k] == 'E') {
+                        } else if (building[i][j][k] == 'E') { // 출구
                             endX = i;
                             endY = j;
                             endZ = k;
@@ -102,13 +95,20 @@ public class Main {
                     }
                 }
             }
-            bfs(startX, startY, startZ);
+
+            int time = bfs();
+
+            if (time != -1) { // 탈출 가능한 경우
+                sb.append("Escaped in ").append(time).append(" minute(s).\n");
+            } else {
+                sb.append("Trapped!\n");
+            }
         }
-        
+
         bw.write(sb.toString());
 
         bw.flush();
-        br.close();
         bw.close();
+        br.close();
     }
 }
