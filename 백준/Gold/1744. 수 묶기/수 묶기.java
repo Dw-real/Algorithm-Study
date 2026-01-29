@@ -1,59 +1,55 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
+class Main {
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        
-        int n = Integer.parseInt(br.readLine()); // 수의 개수
 
-        int sum = 0;
-        PriorityQueue<Integer> plusNum = new PriorityQueue<Integer>(Collections.reverseOrder()); // 양수는 내림차순 정렬
-        PriorityQueue<Integer> minusNum = new PriorityQueue<Integer>();
+        int n = Integer.parseInt(br.readLine()); // 수열의 크기
+
+        PriorityQueue<Integer> positiveNum = new PriorityQueue<>((o1, o2) -> o2 - o1); // 양수
+        PriorityQueue<Integer> negativeNum = new PriorityQueue<>(); // 음수
+
         int one = 0; // 1의 개수
         int zero = 0; // 0의 개수
 
-        for (int i=0; i<n; i++) {
+        for (int i = 0; i < n; i++) {
             int num = Integer.parseInt(br.readLine());
-            if (num == 0)
-                zero++;
-            else if (num == 1)
+
+            if (num > 1) {
+                positiveNum.add(num);
+            } else if (num == 1) {
                 one++;
-            else if (num > 0)
-                plusNum.add(num);
-            else
-                minusNum.add(num);
+            } else if (num == 0) {
+                zero++;
+            } else {
+                negativeNum.add(num);
+            }
         }
 
-        while (plusNum.size() > 1) {
-            int n1 = plusNum.remove();
-            int n2 = plusNum.remove();
-            sum += (n1 * n2);
+        int sum = 0;
+
+        while (positiveNum.size() > 1) {
+            sum += positiveNum.poll() * positiveNum.poll();
         }
 
-        while (minusNum.size() > 1) {
-            int n1 = minusNum.remove();
-            int n2 = minusNum.remove();
-            sum += (n1 * n2);
+        while (negativeNum.size() > 1) {
+            sum += negativeNum.poll() * negativeNum.poll();
         }
 
-        // 양수 처리
-        if (!plusNum.isEmpty()) {
-            sum += plusNum.remove();
+        sum += one; // 1의 개수만큼 더함 -> 1은 곱하는 것보다 더하는 것이 더 큰 값이 나옴
+        if (!positiveNum.isEmpty()) {
+            sum += positiveNum.poll();
         }
 
-        // 음수 처리
-        if (!minusNum.isEmpty()) {
+        if (!negativeNum.isEmpty()) {
             if (zero == 0)
-                sum += minusNum.remove();
+                sum += negativeNum.poll();
         }
-        
-        // 1 처리
-        sum += one;
-
         bw.write(sum + "\n");
-        
+
         bw.flush();
         bw.close();
         br.close();
