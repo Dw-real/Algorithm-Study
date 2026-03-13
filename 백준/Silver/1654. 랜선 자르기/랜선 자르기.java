@@ -1,31 +1,32 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
-    static long cutLan(int[] arr, long mid) {
-        long sum = 0;
-        for (int len : arr) {
-            sum += (len / mid);
+class Main {
+    static long[] lan;
+
+    static boolean isPossible(long value, long n) {
+        long count = 0;
+
+        for (long l : lan) {
+            if (value > l)
+                continue;
+            count += (l / value);
         }
 
-        return sum;
+        return count >= n;
     }
 
-    static long searchLongest(int[] arr, int n, long high) {
+    static long getMaxLen(long n) {
         long low = 1;
-        long mid;
-        long ans = 0;
+        long high = lan[lan.length - 1];
+        long mid, ans = 0;
 
         while (low <= high) {
             mid = (low + high) / 2;
-
-            long sum = cutLan(arr, mid);
-
-            if (sum >= n) {
-                low = mid + 1;
+            if (isPossible(mid, n)) {
                 ans = mid;
-            }
-            else {
+                low = mid + 1;
+            } else {
                 high = mid - 1;
             }
         }
@@ -41,18 +42,15 @@ public class Main {
         int k = Integer.parseInt(st.nextToken());
         int n = Integer.parseInt(st.nextToken());
 
-        int[] arr = new int[k];
-
-        for (int i=0; i<k; i++) {
-            arr[i] = Integer.parseInt(br.readLine());
+        lan = new long[k];
+        for (int i = 0; i < k; i++) {
+            lan[i] = Integer.parseInt(br.readLine());
         }
 
-        Arrays.sort(arr);
+        Arrays.sort(lan);
 
-        long high = arr[k - 1];
+        bw.write(getMaxLen(n) + "\n");
 
-        bw.write(searchLongest(arr, n, high) + "\n");
-        
         bw.flush();
         bw.close();
         br.close();
