@@ -5,6 +5,8 @@ class Main {
     static int[][] board;
     static int n, m, d;
     static int max = 0;
+    static int[] dx = {0, -1, 0};
+    static int[] dy = {-1, 0, 1};
 
     static void batchSoldier(int[] output, int[] num, boolean[] check, int start, int depth) {
         if (depth == 3) {
@@ -31,35 +33,17 @@ class Main {
         for (int i = 0; i < n; i++) {
             boolean[][] visited = new boolean[n][m];
             for (int j = 0; j < output.length; j++) {
-                int archerX = n;
                 int archerY = output[j];
-                int minDist = Integer.MAX_VALUE;
-                int minX = Integer.MAX_VALUE;
-                int minY = Integer.MAX_VALUE;
 
-                for (int k = 0; k < copy.length; k++) {
-                    for (int l = 0; l < copy[k].length; l++) {
-                        if (copy[k][l] == 1) {
-                            int dist = getDistance(archerX, archerY, k, l);
-                            if (dist <= d) {
-                                if (dist < minDist ||
-                                        (dist == minDist && l < minY)) {
-                                    minDist = dist;
-                                    minX = k;
-                                    minY = l;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (minDist <= d) {
-                    visited[minX][minY] = true;
+                int[] target = bfs(copy, archerY);
+                if (target != null) {
+                    visited[target[0]][target[1]] = true;
                 }
             }
-            for (int r = 0; r < n; r++) {
-                for (int u = 0; u < m; u++) {
-                    if (visited[r][u]) {
-                        copy[r][u] = 0;
+            for (int k = 0; k < n; k++) {
+                for (int l = 0; l < m; l++) {
+                    if (visited[k][l]) {
+                        copy[k][l] = 0;
                         count++;
                     }
                 }
@@ -69,8 +53,36 @@ class Main {
         max = Math.max(max, count);
     }
 
-    static int getDistance(int x1, int y1, int x2, int y2) {
-        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+    static int[] bfs(int[][] arr, int archerY) {
+        Queue<int[]> q = new ArrayDeque<>();
+        boolean[][] visited = new boolean[arr.length][arr[0].length];
+        q.add(new int[]{n - 1, archerY, 1});
+        visited[n - 1][archerY] = true;
+
+        while (!q.isEmpty()) {
+            int[] now = q.poll();
+            int nowX = now[0];
+            int nowY = now[1];
+            int dist = now[2];
+
+            if (dist > d) continue;
+
+            if (arr[nowX][nowY] == 1) {
+                return new int[]{nowX, nowY};
+            }
+
+            for (int i = 0; i < 3; i++) {
+                int nx = nowX + dx[i];
+                int ny = nowY + dy[i];
+
+                if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+                if (visited[nx][ny]) continue;
+
+                visited[nx][ny] = true;
+                q.add(new int[]{nx, ny, dist + 1});
+            }
+        }
+        return null;
     }
 
     static void moveEnemy(int[][] copy) {
