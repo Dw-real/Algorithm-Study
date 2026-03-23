@@ -1,0 +1,8 @@
+# 동물의 생물 종, 이름, 성별 및 중성화 여부
+# ID 기준 오름차순
+# 이름이 없는 경우 NO name
+SELECT ANIMAL_TYPE, CASE WHEN NAME IS NULL THEN 'No name'
+ELSE NAME END AS NAME, 
+SEX_UPON_INTAKE
+FROM ANIMAL_INS
+ORDER BY ANIMAL_ID
