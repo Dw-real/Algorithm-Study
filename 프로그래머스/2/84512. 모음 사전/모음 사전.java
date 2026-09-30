@@ -2,28 +2,25 @@ import java.util.*;
 
 class Solution {
     static char[] moeum = {'A', 'E', 'I', 'O', 'U'};
-    static ArrayList<String> words;
+    static ArrayList<String> words = new ArrayList<>();
 
-    public int solution(String word) {
-        words = new ArrayList<>();
-
-        for (int i = 1; i <= moeum.length; i++) {
-            dfs(new StringBuilder(), 0, i);
-        }
+    static int solution(String word) {
+        words.clear();
+        dfs(new StringBuilder());
 
         Collections.sort(words);
-        return words.indexOf(word) + 1;
+        return words.indexOf(word);
     }
 
+    static void dfs(StringBuilder sb) {
+        words.add(sb.toString());
 
-    public void dfs(StringBuilder sb, int len, int depth) {
-        if (len == depth) {
-            words.add(sb.toString());
+        if (sb.length() == 5)
             return;
-        }
-        for (int i = 0; i < moeum.length; i++) {
-            sb.append(moeum[i]);
-            dfs(sb, len + 1, depth);
+
+        for (char c : moeum) {
+            sb.append(c);
+            dfs(sb);
             sb.deleteCharAt(sb.length() - 1);
         }
     }
