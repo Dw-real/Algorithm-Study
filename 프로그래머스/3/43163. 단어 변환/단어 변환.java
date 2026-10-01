@@ -2,15 +2,18 @@ class Solution {
     static boolean[] visited;
     static int answer;
 
-    public int solution(String begin, String target, String[] words) {
-        visited = new boolean[words.length];
+    static int solution(String begin, String target, String[] words) {
+        int len = words.length;
+        visited = new boolean[len];
         answer = 0;
-        dfs(begin, target, words, 0);
+
+        transformWord(begin, target, words, 0);
+
         return answer;
     }
 
-    public void dfs(String word, String target, String[] words, int count) {
-        if (word.equals(target)) {
+    static void transformWord(String begin, String target, String[] words, int count) {
+        if (begin.equals(target)) {
             answer = count;
             return;
         }
@@ -18,18 +21,20 @@ class Solution {
             if (visited[i])
                 continue;
 
-            int eq = 0; // 알파벳이 같은 부분
+            int eq = 0; // 같은 알파벳 개수
 
-            for (int j = 0; j < target.length(); j++) {
-                if (word.charAt(j) == words[i].charAt(j)) {
+            for (int j=0; j<begin.length(); j++) {
+                if (begin.charAt(j) == words[i].charAt(j)) {
                     eq++;
                 }
             }
-            if (eq == target.length() - 1) {
+
+            if (eq == begin.length() - 1) {
                 visited[i] = true;
-                dfs(words[i], target, words, count + 1);
+                transformWord(words[i], target, words, count + 1);
                 visited[i] = false;
             }
         }
     }
+
 }
