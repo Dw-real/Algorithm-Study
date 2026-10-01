@@ -1,15 +1,13 @@
 import java.util.*;
 
 class Solution {
-    static ArrayList<Integer>[] graph;
     static boolean[] visited;
+    static ArrayList<Integer>[] graph;
 
-    public int solution(int n, int[][] computers) {
-        int answer = 0;
-        graph = new ArrayList[n];
+    static int solution(int n, int[][] computers) {
         visited = new boolean[n];
-
-        for (int i = 0; i < graph.length; i++) {
+        graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
             graph[i] = new ArrayList<>();
         }
 
@@ -21,6 +19,8 @@ class Solution {
             }
         }
 
+        int answer = 0;
+
         for (int i = 0; i < n; i++) {
             if (!visited[i]) {
                 answer += bfs(i);
@@ -30,18 +30,18 @@ class Solution {
         return answer;
     }
 
-    public int bfs(int start) {
+    static int bfs(int node) {
         Queue<Integer> q = new LinkedList<>();
-        visited[start] = true;
-        q.add(start);
+        q.add(node);
+        visited[node] = true;
 
-        while (!q.isEmpty()){
+        while (!q.isEmpty()) {
             int now = q.poll();
 
             for (int next : graph[now]) {
                 if (!visited[next]) {
-                    visited[next] = true;
                     q.add(next);
+                    visited[next] = true;
                 }
             }
         }
